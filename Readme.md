@@ -8,9 +8,9 @@
   
 ## Components
   - **Attiny 85** flashed at 8 MHz
-  - Oled screen 0.91"
+  - **Oled screen** 0.91"
   - **DS18B20** Dallas digital temperature sensor
-  - powered with one CR2032 battery 220 mAh
+  - powered with one **CR2032 battery** 220 mAh
   - push button for interrupt
   - switch for battery control
   
