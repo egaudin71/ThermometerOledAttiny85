@@ -1,4 +1,4 @@
-# Thermometer with Oled screen and attiny 85
+# Thermometer with Oled screen and Attiny 85
 
 ## Features
   - show temperature measured by sensor DS18B20
