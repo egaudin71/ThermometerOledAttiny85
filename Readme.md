@@ -16,10 +16,15 @@
   
 ## Consumption
   - deep sleeping mode for Attiny and powersave for Oled screen
-    - 7µA
+    - 7 µA
   - during temperature measurement and showing value
     - 7 mA = 3 mA for Attiny + 4 mA for Oled
     
 ## Life time estimation
-  - Suppose showing temperature 10 times a day with 30 sec duration
-  
+  - suppose showing temperature 10 times a day with 30 sec duration at 7 mA
+    - 0.083 hrs/day = 0.583 mA/day
+  - suppose remaining time at 7 µA
+    - ~ 24 hrs/day = 0.168 mA/day
+  - total consumption 0.751 mA/day
+    - with CR2032 capacity at 200 mAh : 366 days ~ 1 year
+    
