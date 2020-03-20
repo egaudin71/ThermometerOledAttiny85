@@ -1,7 +1,7 @@
 # Thermometer
 
 ## Components
-  - Attiny 85 (@ 8Mz)
+  - Attiny 85 flashed at 8MHz
   - Oled screen 0.91"
   - DS18B20 digital temperature sensor
   - powered with one CR2032 battery 220 mAh
