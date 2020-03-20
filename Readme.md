@@ -14,7 +14,7 @@
   - push button for interrupt
   - switch for battery control
   
-## Consumption
+## Consumption [Measured]
   - deep sleeping mode for Attiny and powersave for Oled screen
     - 7 µA
   - during temperature measurement and showing value
