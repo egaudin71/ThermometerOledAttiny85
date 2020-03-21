@@ -14,6 +14,15 @@
   - push button for interrupt
   - switch for battery control
   
+## Libraries
+  - #include <avr/io.h>
+  - #include <avr/interrupt.h>
+  - #include <avr/sleep.h>
+  - #include <util/delay.h> for switch debouncing
+  - #include <U8x8lib.h> for SS1306 Oled scrren
+  - #include <OneWire.h> for Dallas sensor
+
+  
 ## Consumption [Measured]
   - deep sleeping mode for Attiny and powersave for Oled screen
     - 7 µA
