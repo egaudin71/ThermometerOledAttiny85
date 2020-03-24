@@ -31,9 +31,9 @@
     
 ## Life time [Estimation]
   - suppose showing temperature 10 times a day with 30 sec duration at 7 mA
-    - 0.083 hrs/day = 0.583 mA/day
+    - 0.083 hrs/day = 0.583 mAh/day
   - suppose remaining time at 7 µA
-    - ~ 24 hrs/day = 0.168 mA/day
-  - total consumption 0.751 mA/day
+    - ~ 24 hrs/day = 0.168 mAh/day
+  - total consumption 0.751 mAh/day
     - with CR2032 capacity at 200 mAh : 366 days ~ 1 year
     
