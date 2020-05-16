@@ -7,19 +7,21 @@
 
 U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 2, /* data=*/ 0, /* reset=*/ U8X8_PIN_NONE);
 
-#define ONE_WIRE_BUS PB1
-#define INTERRUPT_PIN0 PCINT4
-//#define LED_0 PB3
-#define BUTTON PB4
-#define debounce 20
+#define ONE_WIRE_BUS PB1 // capteur temperature
+#define INTERRUPT_PIN1 PCINT3 // Photo transistor
+#define INTERRUPT_PIN0 PCINT4 // bouton
+#define BUTTON PB4 // bouton
+#define PHOTOTRANS PB3 // Photo transistor
+
+#define DEBOUNCE 20  // anti rebond
+#define ALARM 30000 // alarm in ms alarm time - 30 sec
 #define adc_disable() (ADCSRA &= ~(1<<ADEN)) // disable ADC (before power-off)
 
 OneWire oneWire(ONE_WIRE_BUS);// for Dallas sensors D18B20 precision 0.0625 deg
 
 //----------------------- graphique et page
 volatile byte page = 1;
-volatile byte sleeping = 0;
-const unsigned long Alarm = 30000; // alarm time - 15 minutes
+volatile byte sleeping = 0; // 0 == awake and 1 == sleeping
 unsigned long StartTime = 0;        // start time
 
 //================================================
@@ -27,17 +29,18 @@ void setup()
 //================================================
 {
   u8x8.begin();
-  u8x8.setPowerSave(0); //enegergiesparen 0 aus
-  u8x8.setFlipMode(1);
+  u8x8.setPowerSave(0); //screen powered up
+  u8x8.setFlipMode(0); //0 for 180 deg rotation
   u8x8.setFont(u8x8_font_inr21_2x4_n);
 
-  /*  DDRB |= (1 << LED_0);// configured in output
-    PORTB |= (1 << LED_0);
-  */
-  DDRB &= ~(1 << BUTTON);//configured in input
-  PORTB |= (1 << BUTTON);// pullup
+  DDRB &= ~(1 << BUTTON);//configured button in input
+  DDRB &= ~(1 << PHOTOTRANS);//configured phototrans in input
+  PORTB |= (1 << BUTTON);// pullup for button
+  PORTB |= (1 << PHOTOTRANS);// pullup for phototransistor if needed
+
   adc_disable();// for low power reduction
   initInterupt();
+
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
 }
@@ -48,7 +51,8 @@ void initInterupt()
 {
   cli();
   GIMSK |= (1 << PCIE);
-  PCMSK |= (1 << INTERRUPT_PIN0);
+  PCMSK |= (1 << INTERRUPT_PIN0); // interrupt for button
+  PCMSK |= (1 << INTERRUPT_PIN1); // interrupt for phototrans
   sei();
 }
 
@@ -56,7 +60,7 @@ void initInterupt()
 void enterSleep()
 //================================================
 {
-  u8x8.setPowerSave(1);
+  u8x8.setPowerSave(1); // screen powerded down
   sleeping = 1;
   sleep_enable();
   sleep_cpu();
@@ -66,18 +70,21 @@ void enterSleep()
 ISR(PCINT0_vect)
 //================================================
 {
-  //  byte buttonNow = PINB & (1 << BUTTON);// 1 si relache et 0 si appuie
+  //  PINB & (1 << BUTTON);// 1 si relache  a cause du pullup et 0 si appuie
 
   cli();
-  _delay_ms(debounce);// for debounce
+  _delay_ms(DEBOUNCE);// for button debounce
 
-  if (sleeping == 0) {// not cause by wake up
+  if (sleeping == 0) {// not cause by wake up the screen is powered up
     if (!(PINB & (1 << BUTTON))) { // 1 si relache et 0 si appuie
       page = (page == 0) ? 1 : 0;
     }
   }
+  if (sleeping == 1) {// not cause by wake up the screen is powered up
+    page = ( PINB & (1 << PHOTOTRANS) ) ? 0 : 1;
+  }
   sei();
-  //(buttonNow) ? PORTB |= (1 << LED_0) : PORTB &= ~ (1 << LED_0);
+
 }
 
 
@@ -86,11 +93,11 @@ void loop()
 //================================================
 {
   getTemp();
-  u8x8.setPowerSave((page == 0) ? 1 : 0);
+  u8x8.setPowerSave((page == 0) ? 1 : 0); // 1 == shutdown
 
-  if ((millis() - StartTime) > Alarm) {
-    enterSleep();
-    u8x8.setPowerSave(0);
+  if ((millis() - StartTime) > ALARM) {
+    enterSleep();// infinit loop to sleep
+    u8x8.setPowerSave(0); // powered up the screen
     sleeping = 0;
     StartTime = millis();
   }
